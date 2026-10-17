@@ -1,0 +1,50 @@
+
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "main.py"
+      - "buildozer.spec"
+      - ".github/workflows/build.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip autoconf libtool \
+            pkg-config zlib1g-dev libncurses-dev \
+            cmake libffi-dev libssl-dev \
+            python3-pip python3-venv
+
+      - name: Install Buildozer
+        run: |
+          pip3 install --user --break-system-packages \
+            "Cython<3" buildozer
+
+      - name: Build APK
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Battle-Arena-APK
+          path: bin/*.apk
+          if-no-files-found: error
+          
