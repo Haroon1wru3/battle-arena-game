@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -33,12 +34,14 @@ jobs:
 
       - name: Install Buildozer
         run: |
-          pip3 install --user --break-system-packages \
-            "Cython<3" buildozer
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install "Cython<3" buildozer
 
       - name: Build APK
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
+          . .venv/bin/activate
           buildozer android debug
 
       - name: Upload APK
