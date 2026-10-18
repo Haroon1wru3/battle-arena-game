@@ -1,4 +1,3 @@
-
 [app]
 title = Battle Arena
 package.name = battlearena
@@ -15,3 +14,7 @@ log_level = 2
 warn_on_root = 1
 
 [app:android]
+android.api = 31
+android.minapi = 21
+android.build_tools_version = 30.0.3
+
